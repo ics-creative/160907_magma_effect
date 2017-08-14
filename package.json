@@ -1,0 +1,24 @@
+{
+  "name": "demo1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run lite & npm run watch",
+    "lite": "lite-server",
+    "build": "browserify src/Main.ts -p [tsify] -o public/js/bundle.js -v -d",
+    "watch": "watchify src/Main.ts -p [tsify] -o public/js/bundle.js -v -d",
+    "typings": "typings",
+    "postinstall": "typings install"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "browserify": "^13.0.1",
+    "lite-server": "^2.2.2",
+    "tsify": "^2.0.3",
+    "typescript": "^2.0.10",
+    "typings": "^1.0.4",
+    "watchify": "^3.7.0"
+  }
+}

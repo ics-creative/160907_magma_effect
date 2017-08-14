@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true
+  },
+  "exclude": [
+    "node_modules",
+    "typings/",
+    "typings/index.d.ts"
+  ],
+  "files": [
+    "src/Main.ts",
+    "typings/index.d.ts"
+  ]
+}
