@@ -1,10 +1,12 @@
+import * as THREE from 'three';
+
 /**
  * アウトグロークラスです。
  */
 export default class OutGlow extends THREE.Object3D {
 
   /** スプライト */
-  private _sprite:THREE.Sprite;
+  private _sprite: THREE.Sprite;
 
   /**
    * コンストラクター
@@ -15,14 +17,14 @@ export default class OutGlow extends THREE.Object3D {
 
     // テクスチャ
     let loader = new THREE.TextureLoader();
-    let map = loader.load('./assets/texture/Particle01.png');
+    let map    = loader.load('./assets/texture/Particle01.png');
 
     // マテリアル
     let material = new THREE.SpriteMaterial({
-      map: map,
-      color: 0xffffff,
-      blending: THREE.AdditiveBlending,
-      opacity: 0.8,
+      map        : map,
+      color      : 0xffffff,
+      blending   : THREE.AdditiveBlending,
+      opacity    : 0.8,
       transparent: true
     });
 

@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import Camera from '../Camera';
 
 /**
@@ -6,11 +7,11 @@ import Camera from '../Camera';
 export default class InGlow extends THREE.Object3D {
 
   /** ジオメトリ */
-  private _geometry:THREE.SphereGeometry;
+  private _geometry: THREE.SphereGeometry;
   /** マテリアル */
-  private _material:THREE.ShaderMaterial;
+  private _material: THREE.ShaderMaterial;
   /** メッシュ */
-  private _mesh:THREE.Mesh;
+  private _mesh: THREE.Mesh;
 
   /**
    * コンストラクター
@@ -27,11 +28,11 @@ export default class InGlow extends THREE.Object3D {
 
     // マテリアル
     this._material = new THREE.ShaderMaterial({
-      uniforms: {
-        glowColor: {type: "c", value: new THREE.Color(0x96ecff)},
-        viewVector: {type: "v3", value: camera.position}
+      uniforms      : {
+        glowColor : {type: 'c', value: new THREE.Color(0x96ecff)},
+        viewVector: {type: 'v3', value: camera.position}
       },
-      vertexShader: `
+      vertexShader  : `
         uniform vec3 viewVector;    // カメラ位置
         varying float opacity;      // 透明度
         void main()
@@ -57,15 +58,15 @@ export default class InGlow extends THREE.Object3D {
           gl_FragColor = vec4(glowColor, opacity);
         }
       `,
-      side: THREE.FrontSide,
-      blending: THREE.AdditiveBlending,
-      transparent: true
+      side          : THREE.FrontSide,
+      blending      : THREE.AdditiveBlending,
+      transparent   : true
     });
 
     // メッシュ
     this._mesh = new THREE.Mesh(
-      this._geometry,
-      this._material
+        this._geometry,
+        this._material
     );
     this.add(this._mesh);
   }

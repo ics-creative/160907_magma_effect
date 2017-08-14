@@ -1,29 +1,32 @@
+import * as THREE from 'three';
+
+
 /**
  * フレアクラスです。
  */
 export default class Flare extends THREE.Object3D {
 
   /** ジオメトリ */
-  private _geometry:THREE.CylinderGeometry;
+  private _geometry: THREE.CylinderGeometry;
   /** カラーマップ */
-  private _map:THREE.Texture;
+  private _map: THREE.Texture;
   /** マテリアル */
-  private _material:THREE.ShaderMaterial;
+  private _material: THREE.ShaderMaterial;
   /** メッシュ */
-  private _mesh:THREE.Mesh;
+  private _mesh: THREE.Mesh;
   /** スピード */
-  private _speed:number;
+  private _speed: number;
   /** オフセット */
-  private _offset:THREE.Vector2 = new THREE.Vector2();
+  private _offset: THREE.Vector2 = new THREE.Vector2();
   /** 上面の半径 */
-  private _topRadius:number;
+  private _topRadius: number;
   /** 下面の半径 */
-  private _bottomRadius:number;
+  private _bottomRadius: number;
   /** ドーナツの太さ */
-  private _diameter:number;
+  private _diameter: number;
 
   /** ランダム係数 */
-  private _randomRatio:number = Math.random() + 1;
+  private _randomRatio: number = Math.random() + 1;
 
   /**
    * コンストラクター
@@ -34,16 +37,16 @@ export default class Flare extends THREE.Object3D {
 
     this._speed = Math.random() * 0.05 + 0.01;
 
-    this._topRadius = 6;
+    this._topRadius    = 6;
     this._bottomRadius = 2;
-    this._diameter = this._topRadius - this._bottomRadius;
+    this._diameter     = this._topRadius - this._bottomRadius;
 
     // ジオメトリ
     this._geometry = new THREE.CylinderGeometry(this._topRadius, this._bottomRadius, 0, 30, 3, true);
 
     // カラーマップ
-    let loader = new THREE.TextureLoader();
-    this._map = loader.load('./assets/texture/aura3_type2.png');
+    let loader      = new THREE.TextureLoader();
+    this._map       = loader.load('./assets/texture/aura3_type2.png');
     this._map.wrapS = this._map.wrapT = THREE.RepeatWrapping;
     this._map.repeat.set(10, 10);
 
@@ -52,8 +55,8 @@ export default class Flare extends THREE.Object3D {
 
     // メッシュ
     this._mesh = new THREE.Mesh(
-      this._geometry,
-      this._material
+        this._geometry,
+        this._material
     );
     this.add(this._mesh);
   }
@@ -62,31 +65,31 @@ export default class Flare extends THREE.Object3D {
    * マテリアルを生成します。
    * @return THREE.ShaderMaterial
    */
-  private _createMaterial():THREE.ShaderMaterial {
+  private _createMaterial(): THREE.ShaderMaterial {
     let material = new THREE.ShaderMaterial({
-      uniforms: {
-        map: {
-          type: 't',
+      uniforms      : {
+        map        : {
+          type : 't',
           value: this._map
         },
-        offset: {
-          type: 'v2',
+        offset     : {
+          type : 'v2',
           value: this._offset
         },
-        opacity: {
-          type: 'f',
+        opacity    : {
+          type : 'f',
           value: 0.15
         },
         innerRadius: {
-          type: 'f',
+          type : 'f',
           value: this._bottomRadius
         },
-        diameter: {
-          type: 'f',
+        diameter   : {
+          type : 'f',
           value: this._diameter
         }
       },
-      vertexShader: `
+      vertexShader  : `
         varying vec2 vUv;       // フラグメントシェーダーに渡すUV座標
         varying float radius;   // フラグメントシェーダーに渡す半径
         uniform vec2 offset;    // カラーマップのズレ位置
@@ -122,10 +125,10 @@ export default class Flare extends THREE.Object3D {
           gl_FragColor = baseColor * vec4(1.0, 1.0, 1.0, opacity);
         }
       `,
-      side: THREE.DoubleSide,
-      blending: THREE.AdditiveBlending,
-      depthTest: false,
-      transparent: true
+      side          : THREE.DoubleSide,
+      blending      : THREE.AdditiveBlending,
+      depthTest     : false,
+      transparent   : true
     });
     return material;
   }

@@ -1,18 +1,13 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "noImplicitAny": true,
-    "removeComments": true,
-    "preserveConstEnums": true,
-    "sourceMap": true
+    "module": "es2015",
+    "sourceMap": true,
+    "lib": [
+      "es2017",
+      "dom"
+    ]
   },
   "exclude": [
-    "node_modules",
-    "typings/",
-    "typings/index.d.ts"
-  ],
-  "files": [
-    "src/Main.ts",
-    "typings/index.d.ts"
+    "node_modules"
   ]
 }

@@ -29,7 +29,6 @@ body {
   opacity: .5;
 }
 
-
 @media only screen and (max-width: 640px) {
   #renderCanvas {
     bottom: 220px;

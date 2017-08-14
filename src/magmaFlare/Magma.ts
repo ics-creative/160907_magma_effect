@@ -1,16 +1,19 @@
+import * as THREE from 'three';
+
+
 /**
  * マグマ球クラスです。
  */
 export default class Magma extends THREE.Object3D {
 
   /** ジオメトリ */
-  private _geometry:THREE.SphereGeometry;
+  private _geometry: THREE.SphereGeometry;
   /** カラーマップ */
-  private _map:THREE.Texture;
+  private _map: THREE.Texture;
   /** マテリアル */
-  private _material:THREE.MeshBasicMaterial;
+  private _material: THREE.MeshBasicMaterial;
   /** メッシュ */
-  private _mesh:THREE.Mesh;
+  private _mesh: THREE.Mesh;
 
   /**
    * コンストラクター
@@ -23,8 +26,8 @@ export default class Magma extends THREE.Object3D {
     this._geometry = new THREE.SphereGeometry(2, 20, 20);
 
     // カラーマップ
-    let loader = new THREE.TextureLoader();
-    this._map = loader.load('./assets/texture/magma.png');
+    let loader      = new THREE.TextureLoader();
+    this._map       = loader.load('./assets/texture/magma.png');
     this._map.wrapS = this._map.wrapT = THREE.RepeatWrapping;
 
     // マテリアル
@@ -34,8 +37,8 @@ export default class Magma extends THREE.Object3D {
 
     // メッシュ
     this._mesh = new THREE.Mesh(
-      this._geometry,
-      this._material
+        this._geometry,
+        this._material
     );
     this.add(this._mesh);
   }
@@ -44,7 +47,7 @@ export default class Magma extends THREE.Object3D {
    * フレーム毎の更新
    */
   public update() {
-    if(this._map) {
+    if (this._map) {
       this._map.offset.x += 0.007;
       this._map.offset.y += 0.008;
     }

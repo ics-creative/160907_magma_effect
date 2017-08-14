@@ -1,6 +1,7 @@
 import Camera from './Camera';
 import Plane from './Plane';
 import MagmaFlare from './magmaFlare/MagmaFlare';
+import * as THREE from 'three';
 
 /**
  * デモのメインクラスです。
@@ -8,21 +9,19 @@ import MagmaFlare from './magmaFlare/MagmaFlare';
 class Main {
 
   /** シーンオブジェクトです。 */
-  private _scene:THREE.Scene;
+  private _scene: THREE.Scene;
   /** カメラオブジェクトです。 */
-  private _camera:Camera;
+  private _camera: Camera;
   /** レンダラーオブジェクトです。 */
-  private _renderer:THREE.WebGLRenderer;
-  /** FPS表示 */
-  private _stats:Stats;
+  private _renderer: THREE.WebGLRenderer;
 
   /** フレームカウント */
-  private _frame:number = 0;
+  private _frame: number = 0;
   /** カメラの移動向き */
-  private _moveDirection:string;
+  private _moveDirection: string;
 
   /** マグマフレア */
-  private _magmaFlare:MagmaFlare;
+  private _magmaFlare: MagmaFlare;
 
   /**
    * コンストラクターです。
@@ -44,17 +43,13 @@ class Main {
     document.body.appendChild(this._renderer.domElement);
 
     // 地面
-    let plane = new Plane();
+    let plane        = new Plane();
     plane.position.y = -3;
     this._scene.add(plane);
 
     // マグマフレア
     this._magmaFlare = new MagmaFlare();
     this._scene.add(this._magmaFlare);
-
-    // 左上に表示するようCSSを記述してbody直下に表示
-    this._stats = new Stats();
-    document.body.appendChild(this._stats.dom);
 
     this._tick();
 
@@ -67,7 +62,9 @@ class Main {
    * フレーム毎のアニメーションの更新をかけます。
    */
   private _tick() {
-    requestAnimationFrame(() => { this._tick() });
+    requestAnimationFrame(() => {
+      this._tick();
+    });
 
     // フレームカウントをインクリメント
     this._frame++;
@@ -78,22 +75,17 @@ class Main {
     this._magmaFlare.update();
 
     // FPSを30に
-    if(this._frame % 2) {
+    if (this._frame % 2) {
       return;
     }
-
-    // Statsの計測を開始
-    this._stats.begin();
     // 描画
     this._renderer.render(this._scene, this._camera);
-    // Statsの計測終了
-    this._stats.end();
   }
 
   /**
    * リサイズ時のハンドラーです。
    */
-  protected _onResize(event:Event):void {
+  protected _onResize(event: Event): void {
     this._resize();
   }
 
@@ -101,7 +93,7 @@ class Main {
    * リサイズ処理
    */
   private _resize() {
-    let width = window.innerWidth;
+    let width  = window.innerWidth;
     let height = window.innerHeight;
     this._renderer.domElement.setAttribute('width', String(width));
     this._renderer.domElement.setAttribute('height', String(height));

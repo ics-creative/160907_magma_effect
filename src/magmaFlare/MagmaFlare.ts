@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import Magma from './Magma';
 import Aura from './Aura';
 import InGlow from './InGlow';
@@ -11,17 +12,17 @@ import OutGlow from './OutGlow';
 export default class MagmaFlare extends THREE.Object3D {
 
   /** マグマ */
-  private _magma:Magma;
+  private _magma: Magma;
   /** オーラ球 */
-  private _aura:Aura;
+  private _aura: Aura;
   /** イングロー */
-  private _inGlow:InGlow;
+  private _inGlow: InGlow;
   /** フレアエミッター */
-  private _flareEmitter:FlareEmitter;
+  private _flareEmitter: FlareEmitter;
   /** スパークエミッター */
-  private _sparkEmitter:SparkEmitter;
+  private _sparkEmitter: SparkEmitter;
   /** 背景グロー */
-  private _outGlow:OutGlow;
+  private _outGlow: OutGlow;
 
   /**
    * コンストラクター
