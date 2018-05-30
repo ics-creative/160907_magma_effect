@@ -6,9 +6,9 @@
     "watch": "webpack -w --mode development"
   },
   "devDependencies": {
-    "lite-server": "^2.2.2",
+    "lite-server": "^2.3.0",
     "ts-loader": "^4.3.0",
-    "typescript": "^2.4.2",
+    "typescript": "^2.8.3",
     "webpack": "^4.10.2",
     "webpack-cli": "^2.1.4"
   },
