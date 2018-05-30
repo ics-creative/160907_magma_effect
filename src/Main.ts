@@ -9,16 +9,14 @@ import * as THREE from 'three';
 class Main {
 
   /** シーンオブジェクトです。 */
-  private _scene: THREE.Scene;
+  private readonly _scene: THREE.Scene;
   /** カメラオブジェクトです。 */
-  private _camera: Camera;
+  private readonly _camera: Camera;
   /** レンダラーオブジェクトです。 */
   private _renderer: THREE.WebGLRenderer;
 
   /** フレームカウント */
   private _frame: number = 0;
-  /** カメラの移動向き */
-  private _moveDirection: string;
 
   /** マグマフレア */
   private _magmaFlare: MagmaFlare;
@@ -28,7 +26,6 @@ class Main {
    * @constructor
    */
   constructor() {
-
     // シーン
     this._scene = new THREE.Scene();
 
@@ -38,7 +35,7 @@ class Main {
     // レンダラー
     this._renderer = new THREE.WebGLRenderer({antialias: true});
     this._renderer.setClearColor(0x000000);
-    this._renderer.setPixelRatio(1);
+    this._renderer.setPixelRatio(devicePixelRatio);
     this._resize();
     document.body.appendChild(this._renderer.domElement);
 

@@ -13,12 +13,8 @@ export default class Plane extends THREE.Object3D {
     super();
 
     // グリッドヘルパー
-    var gridHelper = new THREE.GridHelper(10, 20);
+    const gridHelper = new THREE.GridHelper(10, 20);
     this.add(gridHelper);
-
-    // 軸ヘルパー
-    var axisHelper = new THREE.AxisHelper(2);
-    //this.add(axisHelper);
   }
 
 }

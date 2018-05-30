@@ -59,10 +59,11 @@ export default class Spark extends THREE.Object3D {
    */
   public update() {
     this._mesh.position.y -= this._speed;
-    this._mesh.material.opacity -= 0.05;
+    const m = (this._mesh.material as THREE.Material);
+    m.opacity -= 0.05;
     if (this._mesh.position.y < 0) {
       this._mesh.position.y       = 6;
-      this._mesh.material.opacity = this._opacity;
+      m.opacity = this._opacity;
     }
   }
 }

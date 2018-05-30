@@ -3,7 +3,7 @@
     "module": "es2015",
     "sourceMap": true,
     "lib": [
-      "es2017",
+      "es2018",
       "dom"
     ]
   },
