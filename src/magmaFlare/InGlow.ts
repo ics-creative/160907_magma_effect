@@ -1,11 +1,10 @@
-import * as THREE from 'three';
-import Camera from '../Camera';
+import * as THREE from "three";
+import Camera from "../Camera";
 
 /**
  * イングロークラスです。
  */
 export default class InGlow extends THREE.Object3D {
-
   /** ジオメトリ */
   private _geometry: THREE.SphereGeometry;
   /** マテリアル */
@@ -24,15 +23,19 @@ export default class InGlow extends THREE.Object3D {
     this._geometry = new THREE.SphereGeometry(2.07, 20, 20);
 
     // カメラ
-    let camera = Camera.getInstance();
+    const camera = Camera.getInstance();
 
     // マテリアル
     this._material = new THREE.ShaderMaterial({
-      uniforms      : {
-        glowColor : {type: 'c', value: new THREE.Color(0x96ecff)},
-        viewVector: {type: 'v3', value: camera.position}
+      uniforms: {
+        glowColor: { type: "c", value: new THREE.Color(0x96ecff) },
+        viewVector: { type: "v3", value: camera.position },
+      } as {
+        glowColor: THREE.IUniform<THREE.Color>,
+        viewVector: THREE.IUniform<THREE.Vector3>,
       },
-      vertexShader  : `
+      // language=GLSL
+      vertexShader: `
         uniform vec3 viewVector;    // カメラ位置
         varying float opacity;      // 透明度
         void main()
@@ -50,6 +53,7 @@ export default class InGlow extends THREE.Object3D {
           gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
       `,
+      // language=GLSL
       fragmentShader: `
         uniform vec3 glowColor;
         varying float opacity;
@@ -58,16 +62,13 @@ export default class InGlow extends THREE.Object3D {
           gl_FragColor = vec4(glowColor, opacity);
         }
       `,
-      side          : THREE.FrontSide,
-      blending      : THREE.AdditiveBlending,
-      transparent   : true
+      side: THREE.FrontSide,
+      blending: THREE.AdditiveBlending,
+      transparent: true,
     });
 
     // メッシュ
-    this._mesh = new THREE.Mesh(
-        this._geometry,
-        this._material
-    );
+    this._mesh = new THREE.Mesh(this._geometry, this._material);
     this.add(this._mesh);
   }
 }

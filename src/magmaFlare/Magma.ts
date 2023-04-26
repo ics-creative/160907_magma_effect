@@ -1,11 +1,9 @@
-import * as THREE from 'three';
-
+import * as THREE from "three";
 
 /**
  * マグマ球クラスです。
  */
 export default class Magma extends THREE.Object3D {
-
   /** ジオメトリ */
   private _geometry: THREE.SphereGeometry;
   /** カラーマップ */
@@ -26,20 +24,17 @@ export default class Magma extends THREE.Object3D {
     this._geometry = new THREE.SphereGeometry(2, 20, 20);
 
     // カラーマップ
-    let loader      = new THREE.TextureLoader();
-    this._map       = loader.load('./assets/texture/magma.png');
+    const loader = new THREE.TextureLoader();
+    this._map = loader.load("./assets/texture/magma.png");
     this._map.wrapS = this._map.wrapT = THREE.RepeatWrapping;
 
     // マテリアル
     this._material = new THREE.MeshBasicMaterial({
-      map: this._map
+      map: this._map,
     });
 
     // メッシュ
-    this._mesh = new THREE.Mesh(
-        this._geometry,
-        this._material
-    );
+    this._mesh = new THREE.Mesh(this._geometry, this._material);
     this.add(this._mesh);
   }
 

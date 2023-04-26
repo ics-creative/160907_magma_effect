@@ -1,13 +1,12 @@
-import Camera from './Camera';
-import Plane from './Plane';
-import MagmaFlare from './magmaFlare/MagmaFlare';
-import * as THREE from 'three';
+import Camera from "./Camera";
+import Plane from "./Plane";
+import MagmaFlare from "./magmaFlare/MagmaFlare";
+import * as THREE from "three";
 
 /**
  * デモのメインクラスです。
  */
 class Main {
-
   /** シーンオブジェクトです。 */
   private readonly _scene: THREE.Scene;
   /** カメラオブジェクトです。 */
@@ -33,14 +32,14 @@ class Main {
     this._camera = Camera.getInstance();
 
     // レンダラー
-    this._renderer = new THREE.WebGLRenderer({antialias: true});
+    this._renderer = new THREE.WebGLRenderer({ antialias: true });
     this._renderer.setClearColor(0x000000);
     this._renderer.setPixelRatio(devicePixelRatio);
     this._resize();
     document.body.appendChild(this._renderer.domElement);
 
     // 地面
-    let plane        = new Plane();
+    const plane = new Plane();
     plane.position.y = -3;
     this._scene.add(plane);
 
@@ -52,7 +51,7 @@ class Main {
 
     // リサイズを監視
     this._onResize = this._onResize.bind(this);
-    window.addEventListener('resize', this._onResize);
+    window.addEventListener("resize", this._onResize);
   }
 
   /**
@@ -90,16 +89,16 @@ class Main {
    * リサイズ処理
    */
   private _resize() {
-    let width  = window.innerWidth;
-    let height = window.innerHeight;
-    this._renderer.domElement.setAttribute('width', String(width));
-    this._renderer.domElement.setAttribute('height', String(height));
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    this._renderer.domElement.setAttribute("width", String(width));
+    this._renderer.domElement.setAttribute("height", String(height));
     this._renderer.setSize(width, height);
     this._camera.aspect = width / height;
     this._camera.updateProjectionMatrix();
   }
 }
 
-window.addEventListener('load', () => {
+window.addEventListener("load", () => {
   new Main();
 });

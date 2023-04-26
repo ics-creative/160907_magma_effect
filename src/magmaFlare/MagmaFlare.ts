@@ -1,16 +1,15 @@
-import * as THREE from 'three';
-import Magma from './Magma';
-import Aura from './Aura';
-import InGlow from './InGlow';
-import FlareEmitter from './FlareEmitter';
-import SparkEmitter from './SparkEmitter';
-import OutGlow from './OutGlow';
+import * as THREE from "three";
+import Magma from "./Magma";
+import Aura from "./Aura";
+import InGlow from "./InGlow";
+import FlareEmitter from "./FlareEmitter";
+import SparkEmitter from "./SparkEmitter";
+import OutGlow from "./OutGlow";
 
 /**
  * マグマフレアクラスです。
  */
 export default class MagmaFlare extends THREE.Object3D {
-
   /** マグマ */
   private _magma: Magma;
   /** オーラ球 */

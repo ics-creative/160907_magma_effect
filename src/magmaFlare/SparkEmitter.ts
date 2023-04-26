@@ -1,15 +1,14 @@
-import * as THREE from 'three';
-import Spark from './Spark';
+import * as THREE from "three";
+import Spark from "./Spark";
 
 /**
  * スパークのエミッタークラス
  */
 export default class SparkEmitter extends THREE.Object3D {
-
   /** スパークリスト */
   private _sparkList: Spark[] = [];
   /** スパークの数 */
-  private _sparkNum: number   = 50;
+  private _sparkNum: number = 50;
 
   /**
    * コンストラクター
@@ -18,10 +17,10 @@ export default class SparkEmitter extends THREE.Object3D {
   constructor() {
     super();
 
-    let perAngle = 360 / this._sparkNum;
+    const perAngle = 360 / this._sparkNum;
     for (let i = 0; i < this._sparkNum; i++) {
-      let rad          = perAngle * i * Math.PI / 180;
-      let spark        = new Spark();
+      const rad = (perAngle * i * Math.PI) / 180;
+      const spark = new Spark();
       spark.rotation.x = 360 * Math.sin(rad);
       spark.rotation.z = rad;
       this.add(spark);

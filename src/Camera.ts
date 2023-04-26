@@ -1,10 +1,9 @@
-import * as THREE from 'three';
+import * as THREE from "three";
 
 /**
  * カメラのクラスです。
  */
 export default class Camera extends THREE.PerspectiveCamera {
-
   private static _instance: Camera;
 
   public static getInstance(): Camera {
@@ -12,7 +11,7 @@ export default class Camera extends THREE.PerspectiveCamera {
   }
 
   /** アニメーションに用いる角度の値です。 */
-  private _angle: number  = 0;
+  private _angle: number = 0;
   /** アニメーションの円軌道の半径です。 */
   private _radius: number = 20;
 
@@ -33,9 +32,9 @@ export default class Camera extends THREE.PerspectiveCamera {
    * @param {string} direction
    */
   public rotate(direction: string) {
-    if (direction == 'left') {
+    if (direction == "left") {
       this._angle -= 0.5;
-    } else if (direction == 'right') {
+    } else if (direction == "right") {
       this._angle += 0.5;
     }
   }
@@ -45,10 +44,9 @@ export default class Camera extends THREE.PerspectiveCamera {
    */
   public update() {
     this._angle += 0.3;
-    let lad         = this._angle * Math.PI / 180;
+    const lad = (this._angle * Math.PI) / 180;
     this.position.x = this._radius * Math.sin(lad);
     this.position.z = this._radius * Math.cos(lad);
     this.lookAt(new THREE.Vector3(0, 0, 0));
   }
-
 }

@@ -1,11 +1,9 @@
-import * as THREE from 'three';
-
+import * as THREE from "three";
 
 /**
  * フレアクラスです。
  */
 export default class Flare extends THREE.Object3D {
-
   /** ジオメトリ */
   private _geometry: THREE.CylinderGeometry;
   /** カラーマップ */
@@ -37,16 +35,23 @@ export default class Flare extends THREE.Object3D {
 
     this._speed = Math.random() * 0.05 + 0.01;
 
-    this._topRadius    = 6;
+    this._topRadius = 6;
     this._bottomRadius = 2;
-    this._diameter     = this._topRadius - this._bottomRadius;
+    this._diameter = this._topRadius - this._bottomRadius;
 
     // ジオメトリ
-    this._geometry = new THREE.CylinderGeometry(this._topRadius, this._bottomRadius, 0, 30, 3, true);
+    this._geometry = new THREE.CylinderGeometry(
+      this._topRadius,
+      this._bottomRadius,
+      0,
+      30,
+      3,
+      true
+    );
 
     // カラーマップ
-    let loader      = new THREE.TextureLoader();
-    this._map       = loader.load('./assets/texture/aura3_type2.png');
+    const loader = new THREE.TextureLoader();
+    this._map = loader.load("./assets/texture/aura3_type2.png");
     this._map.wrapS = this._map.wrapT = THREE.RepeatWrapping;
     this._map.repeat.set(10, 10);
 
@@ -54,10 +59,7 @@ export default class Flare extends THREE.Object3D {
     this._material = this._createMaterial();
 
     // メッシュ
-    this._mesh = new THREE.Mesh(
-        this._geometry,
-        this._material
-    );
+    this._mesh = new THREE.Mesh(this._geometry, this._material);
     this.add(this._mesh);
   }
 
@@ -66,30 +68,37 @@ export default class Flare extends THREE.Object3D {
    * @return THREE.ShaderMaterial
    */
   private _createMaterial(): THREE.ShaderMaterial {
-    let material = new THREE.ShaderMaterial({
-      uniforms      : {
-        map        : {
-          type : 't',
-          value: this._map
+    const material = new THREE.ShaderMaterial({
+      uniforms: {
+        map: {
+          type: "t",
+          value: this._map,
         },
-        offset     : {
-          type : 'v2',
-          value: this._offset
+        offset: {
+          type: "v2",
+          value: this._offset,
         },
-        opacity    : {
-          type : 'f',
-          value: 0.15
+        opacity: {
+          type: "f",
+          value: 0.15,
         },
         innerRadius: {
-          type : 'f',
-          value: this._bottomRadius
+          type: "f",
+          value: this._bottomRadius,
         },
-        diameter   : {
-          type : 'f',
-          value: this._diameter
-        }
+        diameter: {
+          type: "f",
+          value: this._diameter,
+        },
+      } as {
+        map: THREE.IUniform<THREE.Texture>,
+        offset: THREE.IUniform<THREE.Vector2>,
+        opacity: THREE.IUniform<number>,
+        innerRadius: THREE.IUniform<number>,
+        diameter: THREE.IUniform<number>,
       },
-      vertexShader  : `
+      // language=GLSL
+      vertexShader: `
         varying vec2 vUv;       // フラグメントシェーダーに渡すUV座標
         varying float radius;   // フラグメントシェーダーに渡す半径
         uniform vec2 offset;    // カラーマップのズレ位置
@@ -104,6 +113,7 @@ export default class Flare extends THREE.Object3D {
           gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
       `,
+      // language=GLSL
       fragmentShader: `
         uniform sampler2D map;      // テクスチャ
         uniform float opacity;      // 透明度
@@ -125,10 +135,10 @@ export default class Flare extends THREE.Object3D {
           gl_FragColor = baseColor * vec4(1.0, 1.0, 1.0, opacity);
         }
       `,
-      side          : THREE.DoubleSide,
-      blending      : THREE.AdditiveBlending,
-      depthTest     : false,
-      transparent   : true
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending,
+      depthTest: false,
+      transparent: true,
     });
     return material;
   }
