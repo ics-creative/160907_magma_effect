@@ -4,3 +4,4 @@ node_modules
 *.map
 .idea
 /yarn.lock
+/package-lock.json

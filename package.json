@@ -1,19 +1,19 @@
 {
   "scripts": {
-    "start": "npm run lite & npm run watch",
-    "lite": "lite-server",
+    "start": "webpack serve",
     "build": "webpack --mode production",
-    "watch": "webpack -w --mode development"
+    "format": "prettier --write src"
   },
   "devDependencies": {
-    "lite-server": "^2.3.0",
-    "ts-loader": "^4.3.0",
-    "typescript": "^2.8.3",
-    "webpack": "^4.10.2",
-    "webpack-cli": "^2.1.4"
+    "prettier": "^2.8.8",
+    "ts-loader": "^9.4.2",
+    "typescript": "^5.0.4",
+    "webpack": "^5.81.0",
+    "webpack-cli": "^5.0.2",
+    "webpack-dev-server": "^4.13.3"
   },
   "dependencies": {
-    "@types/three": "^0.92.3",
-    "three": "^0.92.0"
+    "@types/three": "^0.150.2",
+    "three": "^0.151.3"
   }
 }

@@ -25,5 +25,12 @@ module.exports = {
     ],
   },
   // ソースマップを有効に
-  devtool: 'source-map'
+  devtool: 'source-map',
+
+  // ローカル開発用環境を立ち上げる
+  // 実行時にブラウザが自動的に localhost を開く
+  devServer: {
+    static: "public",
+    open: true
+  }
 };
