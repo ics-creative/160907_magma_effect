@@ -4,9 +4,6 @@ import * as THREE from "three";
  * アウトグロークラスです。
  */
 export class OutGlow extends THREE.Object3D {
-  /** スプライト */
-  private _sprite: THREE.Sprite;
-
   /**
    * コンストラクター
    * @constructor
@@ -14,7 +11,7 @@ export class OutGlow extends THREE.Object3D {
   constructor() {
     super();
 
-    // テクスチャ
+    // テクスチャーを読み込みます。
     const loader = new THREE.TextureLoader();
     const map = loader.load("./assets/texture/Particle01.png");
 
@@ -28,8 +25,8 @@ export class OutGlow extends THREE.Object3D {
     });
 
     // スプライト
-    this._sprite = new THREE.Sprite(material);
-    this._sprite.scale.multiplyScalar(11);
-    this.add(this._sprite);
+    const sprite = new THREE.Sprite(material);
+    sprite.scale.multiplyScalar(11);
+    this.add(sprite);
   }
 }

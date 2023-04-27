@@ -14,31 +14,33 @@ export class Magma extends THREE.Object3D {
   constructor() {
     super();
 
-    // ジオメトリ
-    const geometry = new THREE.SphereGeometry(2, 20, 20);
-
-    // カラーマップ
+    // テクスチャーを読み込みます。
     const loader = new THREE.TextureLoader();
-    this._map = loader.load("./assets/texture/magma.png");
-    this._map.wrapS = this._map.wrapT = THREE.RepeatWrapping;
+    const map = loader.load("./assets/texture/magma.png");
 
-    // マテリアル
-    const material = new THREE.MeshBasicMaterial({
-      map: this._map,
-    });
-
-    // メッシュ
-    const mesh = new THREE.Mesh(geometry, material);
+    // テクスチャーをあてた球のMeshを作成します。
+    const mesh = new THREE.Mesh(
+      // ジオメトリ
+      new THREE.SphereGeometry(2, 20, 20),
+      // マテリアル
+      new THREE.MeshBasicMaterial({ map })
+    );
     this.add(mesh);
+
+    // 縦横でリピートするように設定します。
+    map.wrapS = map.wrapT = THREE.RepeatWrapping;
+
+    this._map = map;
   }
 
   /**
    * フレーム毎の更新
    */
   public update() {
-    if (this._map) {
-      this._map.offset.x = performance.now() / 1000 / 2;
-      this._map.offset.y = performance.now() / 1000 / 2.5;
-    }
+    // 時間の経過でテクスチャーをずらします。
+    // performance.now()はページを開いてからの経過ミリ秒です。
+    // 1000で割って単位を秒にします。
+    this._map.offset.x = performance.now() / 1000 / 2;
+    this._map.offset.y = performance.now() / 1000 / 2.5;
   }
 }
