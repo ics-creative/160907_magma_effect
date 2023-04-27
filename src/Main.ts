@@ -1,12 +1,12 @@
-import Camera from "./Camera";
-import Plane from "./Plane";
-import MagmaFlare from "./magmaFlare/MagmaFlare";
+import { Camera } from "./Camera";
+import { Plane } from "./Plane";
+import { MagmaFlare } from "./magmaFlare/MagmaFlare";
 import * as THREE from "three";
 
 /**
  * デモのメインクラスです。
  */
-class Main {
+export class Main {
   /** シーンオブジェクトです。 */
   private readonly _scene: THREE.Scene;
   /** カメラオブジェクトです。 */
@@ -14,11 +14,8 @@ class Main {
   /** レンダラーオブジェクトです。 */
   private _renderer: THREE.WebGLRenderer;
 
-  /** フレームカウント */
-  private _frame: number = 0;
-
   /** マグマフレア */
-  private _magmaFlare: MagmaFlare;
+  private readonly _magmaFlare: MagmaFlare;
 
   /**
    * コンストラクターです。
@@ -32,11 +29,13 @@ class Main {
     this._camera = Camera.getInstance();
 
     // レンダラー
-    this._renderer = new THREE.WebGLRenderer({ antialias: true });
+    this._renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      canvas: document.querySelector<HTMLCanvasElement>("#myCanvas")!,
+    });
     this._renderer.setClearColor(0x000000);
     this._renderer.setPixelRatio(devicePixelRatio);
     this._resize();
-    document.body.appendChild(this._renderer.domElement);
 
     // 地面
     const plane = new Plane();
@@ -45,13 +44,14 @@ class Main {
 
     // マグマフレア
     this._magmaFlare = new MagmaFlare();
+    this._magmaFlare.position.y = 1;
     this._scene.add(this._magmaFlare);
 
     this._tick();
 
     // リサイズを監視
-    this._onResize = this._onResize.bind(this);
-    window.addEventListener("resize", this._onResize);
+    this._resize = this._resize.bind(this);
+    window.addEventListener("resize", this._resize);
   }
 
   /**
@@ -62,27 +62,13 @@ class Main {
       this._tick();
     });
 
-    // フレームカウントをインクリメント
-    this._frame++;
-
     // カメラの更新
     this._camera.update();
 
     this._magmaFlare.update();
 
-    // FPSを30に
-    if (this._frame % 2) {
-      return;
-    }
     // 描画
     this._renderer.render(this._scene, this._camera);
-  }
-
-  /**
-   * リサイズ時のハンドラーです。
-   */
-  protected _onResize(event: Event): void {
-    this._resize();
   }
 
   /**
@@ -91,14 +77,8 @@ class Main {
   private _resize() {
     const width = window.innerWidth;
     const height = window.innerHeight;
-    this._renderer.domElement.setAttribute("width", String(width));
-    this._renderer.domElement.setAttribute("height", String(height));
     this._renderer.setSize(width, height);
     this._camera.aspect = width / height;
     this._camera.updateProjectionMatrix();
   }
 }
-
-window.addEventListener("load", () => {
-  new Main();
-});

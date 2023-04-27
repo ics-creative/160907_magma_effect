@@ -1,38 +1,30 @@
 import * as THREE from "three";
-import Camera from "../Camera";
+import { Camera } from "../Camera";
 
 /**
  * イングロークラスです。
  */
-export default class InGlow extends THREE.Object3D {
-  /** ジオメトリ */
-  private _geometry: THREE.SphereGeometry;
-  /** マテリアル */
-  private _material: THREE.ShaderMaterial;
-  /** メッシュ */
-  private _mesh: THREE.Mesh;
-
+export class InGlow extends THREE.Object3D {
   /**
    * コンストラクター
-   * @constructor
    */
   constructor() {
     super();
 
     // ジオメトリ
-    this._geometry = new THREE.SphereGeometry(2.07, 20, 20);
+    const geometry = new THREE.SphereGeometry(2.07, 20, 20);
 
     // カメラ
     const camera = Camera.getInstance();
 
     // マテリアル
-    this._material = new THREE.ShaderMaterial({
+    const material = new THREE.ShaderMaterial({
       uniforms: {
         glowColor: { type: "c", value: new THREE.Color(0x96ecff) },
         viewVector: { type: "v3", value: camera.position },
       } as {
-        glowColor: THREE.IUniform<THREE.Color>,
-        viewVector: THREE.IUniform<THREE.Vector3>,
+        glowColor: THREE.IUniform<THREE.Color>;
+        viewVector: THREE.IUniform<THREE.Vector3>;
       },
       // language=GLSL
       vertexShader: `
@@ -68,7 +60,7 @@ export default class InGlow extends THREE.Object3D {
     });
 
     // メッシュ
-    this._mesh = new THREE.Mesh(this._geometry, this._material);
-    this.add(this._mesh);
+    const mesh = new THREE.Mesh(geometry, material);
+    this.add(mesh);
   }
 }

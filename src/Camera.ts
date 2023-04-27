@@ -3,9 +3,12 @@ import * as THREE from "three";
 /**
  * カメラのクラスです。
  */
-export default class Camera extends THREE.PerspectiveCamera {
+export class Camera extends THREE.PerspectiveCamera {
   private static _instance: Camera;
 
+  /**
+   * シングルトン参照
+   */
   public static getInstance(): Camera {
     return Camera._instance || new Camera();
   }
@@ -17,7 +20,6 @@ export default class Camera extends THREE.PerspectiveCamera {
 
   /**
    * コンストラクターです。
-   * @constructor
    */
   constructor() {
     super(45, window.innerWidth / window.innerHeight, 1, 1000);
@@ -28,22 +30,10 @@ export default class Camera extends THREE.PerspectiveCamera {
   }
 
   /**
-   * 回転させます。
-   * @param {string} direction
-   */
-  public rotate(direction: string) {
-    if (direction == "left") {
-      this._angle -= 0.5;
-    } else if (direction == "right") {
-      this._angle += 0.5;
-    }
-  }
-
-  /**
    * 毎フレームの更新をかけます。
    */
   public update() {
-    this._angle += 0.3;
+    this._angle = performance.now() * 0.01;
     const lad = (this._angle * Math.PI) / 180;
     this.position.x = this._radius * Math.sin(lad);
     this.position.z = this._radius * Math.cos(lad);

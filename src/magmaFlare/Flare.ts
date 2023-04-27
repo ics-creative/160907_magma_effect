@@ -3,46 +3,32 @@ import * as THREE from "three";
 /**
  * フレアクラスです。
  */
-export default class Flare extends THREE.Object3D {
-  /** ジオメトリ */
-  private _geometry: THREE.CylinderGeometry;
+export class Flare extends THREE.Object3D {
   /** カラーマップ */
-  private _map: THREE.Texture;
-  /** マテリアル */
-  private _material: THREE.ShaderMaterial;
-  /** メッシュ */
-  private _mesh: THREE.Mesh;
-  /** スピード */
-  private _speed: number;
+  private readonly _map: THREE.Texture;
   /** オフセット */
-  private _offset: THREE.Vector2 = new THREE.Vector2();
-  /** 上面の半径 */
-  private _topRadius: number;
-  /** 下面の半径 */
-  private _bottomRadius: number;
-  /** ドーナツの太さ */
-  private _diameter: number;
+  private readonly _offset: THREE.Vector2 = new THREE.Vector2();
 
   /** ランダム係数 */
   private _randomRatio: number = Math.random() + 1;
 
   /**
    * コンストラクター
-   * @constructor
    */
   constructor() {
     super();
 
-    this._speed = Math.random() * 0.05 + 0.01;
-
-    this._topRadius = 6;
-    this._bottomRadius = 2;
-    this._diameter = this._topRadius - this._bottomRadius;
+    // 上面の半径
+    const topRadius = 6;
+    // 下面の半径
+    const bottomRadius = 2;
+    // ドーナツの太さ
+    const diameter = topRadius - bottomRadius;
 
     // ジオメトリ
-    this._geometry = new THREE.CylinderGeometry(
-      this._topRadius,
-      this._bottomRadius,
+    const geometry = new THREE.CylinderGeometry(
+      topRadius,
+      bottomRadius,
       0,
       30,
       3,
@@ -56,18 +42,23 @@ export default class Flare extends THREE.Object3D {
     this._map.repeat.set(10, 10);
 
     // マテリアル
-    this._material = this._createMaterial();
+    const material = this._createMaterial(bottomRadius, diameter);
 
     // メッシュ
-    this._mesh = new THREE.Mesh(this._geometry, this._material);
-    this.add(this._mesh);
+    const mesh = new THREE.Mesh(geometry, material);
+    this.add(mesh);
   }
 
   /**
    * マテリアルを生成します。
-   * @return THREE.ShaderMaterial
+   * @param bottomRadius 下面の半径
+   * @param diameter ドーナツの太さ
+   * @private
    */
-  private _createMaterial(): THREE.ShaderMaterial {
+  private _createMaterial(
+    bottomRadius: number,
+    diameter: number
+  ): THREE.ShaderMaterial {
     const material = new THREE.ShaderMaterial({
       uniforms: {
         map: {
@@ -84,18 +75,18 @@ export default class Flare extends THREE.Object3D {
         },
         innerRadius: {
           type: "f",
-          value: this._bottomRadius,
+          value: bottomRadius,
         },
         diameter: {
           type: "f",
-          value: this._diameter,
+          value: diameter,
         },
       } as {
-        map: THREE.IUniform<THREE.Texture>,
-        offset: THREE.IUniform<THREE.Vector2>,
-        opacity: THREE.IUniform<number>,
-        innerRadius: THREE.IUniform<number>,
-        diameter: THREE.IUniform<number>,
+        map: THREE.IUniform<THREE.Texture>;
+        offset: THREE.IUniform<THREE.Vector2>;
+        opacity: THREE.IUniform<number>;
+        innerRadius: THREE.IUniform<number>;
+        diameter: THREE.IUniform<number>;
       },
       // language=GLSL
       vertexShader: `
@@ -147,7 +138,7 @@ export default class Flare extends THREE.Object3D {
    * フレーム毎の更新
    */
   public update() {
-    this._offset.x += 0.004 * this._randomRatio;
-    this._offset.y -= 0.015 * this._randomRatio;
+    this._offset.x = (performance.now() / 1000) * 0.2 * this._randomRatio;
+    this._offset.y = (-performance.now() / 1000) * 0.8 * this._randomRatio;
   }
 }

@@ -1,10 +1,10 @@
 import * as THREE from "three";
-import Flare from "./Flare";
+import { Flare } from "./Flare";
 
 /**
  * フレアエミッタークラスです。
  */
-export default class FlareEmiiter extends THREE.Object3D {
+export class FlareEmitter extends THREE.Object3D {
   /** フレアの数 */
   private _flareNum: number = 10;
   /** フレアリスト */
@@ -12,7 +12,6 @@ export default class FlareEmiiter extends THREE.Object3D {
 
   /**
    * コンストラクター
-   * @constructor
    */
   constructor() {
     super();

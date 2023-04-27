@@ -1,27 +1,23 @@
 import * as THREE from "three";
-import Magma from "./Magma";
-import Aura from "./Aura";
-import InGlow from "./InGlow";
-import FlareEmitter from "./FlareEmitter";
-import SparkEmitter from "./SparkEmitter";
-import OutGlow from "./OutGlow";
+import { Magma } from "./Magma";
+import { Aura } from "./Aura";
+import { InGlow } from "./InGlow";
+import { FlareEmitter } from "./FlareEmitter";
+import { SparkEmitter } from "./SparkEmitter";
+import { OutGlow } from "./OutGlow";
 
 /**
  * マグマフレアクラスです。
  */
-export default class MagmaFlare extends THREE.Object3D {
+export class MagmaFlare extends THREE.Object3D {
   /** マグマ */
-  private _magma: Magma;
+  private readonly _magma: Magma;
   /** オーラ球 */
-  private _aura: Aura;
-  /** イングロー */
-  private _inGlow: InGlow;
+  private readonly _aura: Aura;
   /** フレアエミッター */
-  private _flareEmitter: FlareEmitter;
+  private readonly _flareEmitter: FlareEmitter;
   /** スパークエミッター */
-  private _sparkEmitter: SparkEmitter;
-  /** 背景グロー */
-  private _outGlow: OutGlow;
+  private readonly _sparkEmitter: SparkEmitter;
 
   /**
    * コンストラクター
@@ -37,7 +33,7 @@ export default class MagmaFlare extends THREE.Object3D {
     this._aura = new Aura();
 
     // イングロー
-    this._inGlow = new InGlow();
+    const inGlow = new InGlow();
 
     // フレア
     this._flareEmitter = new FlareEmitter();
@@ -46,14 +42,14 @@ export default class MagmaFlare extends THREE.Object3D {
     this._sparkEmitter = new SparkEmitter();
 
     // アウトグロー
-    this._outGlow = new OutGlow();
+    const outGlow = new OutGlow();
 
     this.add(this._magma);
     this.add(this._aura);
-    this.add(this._inGlow);
+    this.add(inGlow);
     this.add(this._flareEmitter);
     this.add(this._sparkEmitter);
-    this.add(this._outGlow);
+    this.add(outGlow);
   }
 
   /**

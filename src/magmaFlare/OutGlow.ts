@@ -3,7 +3,7 @@ import * as THREE from "three";
 /**
  * アウトグロークラスです。
  */
-export default class OutGlow extends THREE.Object3D {
+export class OutGlow extends THREE.Object3D {
   /** スプライト */
   private _sprite: THREE.Sprite;
 

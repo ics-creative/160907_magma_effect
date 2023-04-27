@@ -1,14 +1,14 @@
 import * as THREE from "three";
-import Spark from "./Spark";
+import { Spark } from "./Spark";
 
 /**
  * スパークのエミッタークラス
  */
-export default class SparkEmitter extends THREE.Object3D {
+export class SparkEmitter extends THREE.Object3D {
   /** スパークリスト */
   private _sparkList: Spark[] = [];
   /** スパークの数 */
-  private _sparkNum: number = 50;
+  private _sparkNum: number = 500;
 
   /**
    * コンストラクター
