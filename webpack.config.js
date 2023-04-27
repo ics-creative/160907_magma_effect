@@ -2,7 +2,7 @@ module.exports = {
   // ファイルの出力設定
   output: {
     //  出力ファイルのディレクトリ名
-    path: `${__dirname}/public`,
+    path: `${__dirname}/docs`,
   },
   module: {
     rules: [
@@ -24,7 +24,7 @@ module.exports = {
   // ローカル開発用環境を立ち上げる
   // 実行時にブラウザが自動的に localhost を開く
   devServer: {
-    static: "public",
+    static: "docs",
     open: true
   }
 };
