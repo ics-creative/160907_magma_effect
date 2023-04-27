@@ -36,7 +36,7 @@ export class Spark extends THREE.Object3D {
     });
 
     // メッシュ
-    this._mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.04, 2), material);
+    this._mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 2), material);
     this._mesh.position.y = Math.random() * 5;
     this._mesh.rotation.y = Math.random() * 2;
     this.add(this._mesh);

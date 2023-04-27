@@ -2,6 +2,7 @@ import { Camera } from "./Camera";
 import { Plane } from "./Plane";
 import { MagmaFlare } from "./magmaFlare/MagmaFlare";
 import * as THREE from "three";
+import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 
 /**
  * デモのメインクラスです。
@@ -16,6 +17,7 @@ export class Main {
 
   /** マグマフレア */
   private readonly _magmaFlare: MagmaFlare;
+  private readonly _controls: OrbitControls;
 
   /**
    * コンストラクターです。
@@ -27,6 +29,24 @@ export class Main {
 
     // カメラ
     this._camera = Camera.getInstance();
+    this._camera.position.set(8, 6, 0);
+
+
+    // カメラコントローラーを作成
+    const controls = new OrbitControls(this._camera, document.body);
+    controls.target.set(0, 0, 0);
+    // 滑らかにカメラコントローラーを制御する
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.02;
+    // マウスホイールでのズームの範囲を指定
+    controls.minDistance = 10;
+    controls.maxDistance = 30;
+    // パンできる範囲を指定
+    controls.minPolarAngle = Math.PI / 8;
+    controls.maxPolarAngle = Math.PI / 2.1;
+    controls.autoRotate = true;
+
+    this._controls = controls;
 
     // レンダラー
     this._renderer = new THREE.WebGLRenderer({
@@ -63,7 +83,7 @@ export class Main {
     });
 
     // カメラの更新
-    this._camera.update();
+    this._controls.update();
 
     this._magmaFlare.update();
 

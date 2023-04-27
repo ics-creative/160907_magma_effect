@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 
 /**
  * カメラのクラスです。
@@ -15,8 +16,6 @@ export class Camera extends THREE.PerspectiveCamera {
 
   /** アニメーションに用いる角度の値です。 */
   private _angle: number = 0;
-  /** アニメーションの円軌道の半径です。 */
-  private _radius: number = 20;
 
   /**
    * コンストラクターです。
@@ -24,7 +23,8 @@ export class Camera extends THREE.PerspectiveCamera {
   constructor() {
     super(45, window.innerWidth / window.innerHeight, 1, 1000);
 
-    this.position.set(this._radius, 4, 0);
+
+    this.update();
 
     Camera._instance = this;
   }
@@ -33,10 +33,12 @@ export class Camera extends THREE.PerspectiveCamera {
    * 毎フレームの更新をかけます。
    */
   public update() {
-    this._angle = performance.now() * 0.01;
-    const lad = (this._angle * Math.PI) / 180;
-    this.position.x = this._radius * Math.sin(lad);
-    this.position.z = this._radius * Math.cos(lad);
-    this.lookAt(new THREE.Vector3(0, 0, 0));
+    // this._angle = performance.now() * 0.01;
+    // const lad = (this._angle * Math.PI) / 180;
+    //
+    // const radius = 12 + 5 * Math.sin(lad * 2);
+    // this.position.x = radius * Math.sin(lad);
+    // this.position.z = radius * Math.cos(lad);
+    // this.lookAt(new THREE.Vector3(0, 0, 0));
   }
 }

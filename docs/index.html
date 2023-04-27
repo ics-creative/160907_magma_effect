@@ -1,25 +1,42 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="author" content="株式会社ICS" />
-  <meta name="google" content="notranslate" />
-  <title>MagmaEffect | ICS</title>
-  <script src="main.js"></script>
-  <style>
-    html, body {
-      height: 100%;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="株式会社ICS" />
+    <meta name="google" content="notranslate" />
+    <title>MagmaEffect | ICS</title>
+    <script src="main.js"></script>
+    <style>
+      html,
+      body {
+        height: 100%;
+      }
 
-    body {
-      background-color: #000000;
-      overflow: hidden;
-      margin: 0;
-    }
-  </style>
-</head>
-<body>
-  <canvas id="myCanvas"></canvas>
-</body>
+      body {
+        background-color: #000000;
+        overflow: hidden;
+        margin: 0;
+        cursor: move;
+        font-family: sans-serif;
+      }
+      .annotation {
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
+        margin: 0;
+        padding: 4px 8px;
+        font-size: 0.625rem;
+        border-radius: 4px;
+        color: white;
+        background: rgb(0, 0, 0, 0.5);
+        z-index: 1;
+        user-select: none;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="myCanvas"></canvas>
+    <p class="annotation">マウスドラッグで操作できます</p>
+  </body>
 </html>
