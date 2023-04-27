@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 /**
  * カメラのクラスです。
@@ -22,7 +22,6 @@ export class Camera extends THREE.PerspectiveCamera {
    */
   constructor() {
     super(45, window.innerWidth / window.innerHeight, 1, 1000);
-
 
     this.update();
 

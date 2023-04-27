@@ -21,7 +21,7 @@ export class Magma extends THREE.Object3D {
     // テクスチャーをあてた球のMeshを作成します。
     const mesh = new THREE.Mesh(
       // ジオメトリ
-      new THREE.SphereGeometry(2, 20, 20),
+      new THREE.SphereGeometry(2, 40, 40),
       // マテリアル
       new THREE.MeshBasicMaterial({ map })
     );

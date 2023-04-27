@@ -2,7 +2,7 @@ import { Camera } from "./Camera";
 import { Plane } from "./Plane";
 import { MagmaFlare } from "./magmaFlare/MagmaFlare";
 import * as THREE from "three";
-import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 /**
  * デモのメインクラスです。
@@ -21,7 +21,6 @@ export class Main {
 
   /**
    * コンストラクターです。
-   * @constructor
    */
   constructor() {
     // シーン
@@ -31,7 +30,6 @@ export class Main {
     this._camera = Camera.getInstance();
     this._camera.position.set(8, 6, 0);
 
-
     // カメラコントローラーを作成
     const controls = new OrbitControls(this._camera, document.body);
     controls.target.set(0, 0, 0);
@@ -39,8 +37,8 @@ export class Main {
     controls.enableDamping = true;
     controls.dampingFactor = 0.02;
     // マウスホイールでのズームの範囲を指定
-    controls.minDistance = 10;
-    controls.maxDistance = 30;
+    controls.minDistance = 8;
+    controls.maxDistance = 15;
     // パンできる範囲を指定
     controls.minPolarAngle = Math.PI / 8;
     controls.maxPolarAngle = Math.PI / 2.1;
@@ -67,7 +65,15 @@ export class Main {
     this._magmaFlare.position.y = 1;
     this._scene.add(this._magmaFlare);
 
-    this._tick();
+    // 負荷分散のためちょっと待機
+    const nextTick =
+      "requestIdleCallback" in window
+        ? window.requestIdleCallback
+        : requestAnimationFrame;
+
+    nextTick(() => {
+      this._tick();
+    });
 
     // リサイズを監視
     this._resize = this._resize.bind(this);

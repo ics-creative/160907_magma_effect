@@ -15,7 +15,7 @@ export class Aura extends THREE.Object3D {
     super();
 
     // ジオメトリ
-    const geometry = new THREE.SphereGeometry(2.05, 20, 20);
+    const geometry = new THREE.SphereGeometry(2.02, 40, 40);
 
     // カラーマップ
     const loader = new THREE.TextureLoader();

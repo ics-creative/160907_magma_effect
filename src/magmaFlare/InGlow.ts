@@ -12,7 +12,7 @@ export class InGlow extends THREE.Object3D {
     super();
 
     // ジオメトリ
-    const geometry = new THREE.SphereGeometry(2.07, 20, 20);
+    const geometry = new THREE.SphereGeometry(2.03, 40, 40);
 
     // カメラ
     const camera = Camera.getInstance();
