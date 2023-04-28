@@ -5,6 +5,7 @@ import { InGlow } from "./InGlow";
 import { FlareEmitter } from "./FlareEmitter";
 import { SparkEmitter } from "./SparkEmitter";
 import { OutGlow } from "./OutGlow";
+import GUI from "lil-gui";
 
 /**
  * マグマフレアクラスです。
@@ -50,6 +51,29 @@ export class MagmaFlare extends THREE.Object3D {
     this.add(this._flareEmitter);
     this.add(this._sparkEmitter);
     this.add(outGlow);
+
+    const layers = {
+      Magama: true,
+      Aura: true,
+      Flare: true,
+      Spark: true,
+      "Glow Inside": true,
+      "Glow Outside": true,
+    };
+
+    const gui = new GUI();
+    Object.values(layers).forEach((layer, index) => {
+      gui.add(layers, Object.keys(layers)[index]);
+    });
+    gui.onChange((event) => {
+      this._magma.visible = layers["Magama"];
+      this._aura.visible = layers["Aura"];
+      this._flareEmitter.visible = layers["Flare"];
+      this._sparkEmitter.visible = layers["Spark"];
+      outGlow.visible = layers["Glow Outside"];
+      inGlow.visible = layers["Glow Inside"];
+    });
+    gui.close();
   }
 
   /**

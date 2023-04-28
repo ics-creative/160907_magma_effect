@@ -30,8 +30,10 @@ export class Main {
     this._camera = Camera.getInstance();
     this._camera.position.set(8, 6, 0);
 
+    const canvas = document.querySelector<HTMLCanvasElement>("#myCanvas")!;
+
     // カメラコントローラーを作成
-    const controls = new OrbitControls(this._camera, document.body);
+    const controls = new OrbitControls(this._camera, canvas);
     controls.target.set(0, 0, 0);
     // 滑らかにカメラコントローラーを制御する
     controls.enableDamping = true;
@@ -49,7 +51,7 @@ export class Main {
     // レンダラー
     this._renderer = new THREE.WebGLRenderer({
       antialias: true,
-      canvas: document.querySelector<HTMLCanvasElement>("#myCanvas")!,
+      canvas: canvas,
     });
     this._renderer.setClearColor(0x000000);
     this._renderer.setPixelRatio(devicePixelRatio);
