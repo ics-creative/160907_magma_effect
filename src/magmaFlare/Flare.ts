@@ -32,7 +32,7 @@ export class Flare extends THREE.Object3D {
       0,
       30,
       3,
-      true
+      true,
     );
 
     // カラーマップ
@@ -57,7 +57,7 @@ export class Flare extends THREE.Object3D {
    */
   private _createMaterial(
     bottomRadius: number,
-    diameter: number
+    diameter: number,
   ): THREE.ShaderMaterial {
     const material = new THREE.ShaderMaterial({
       uniforms: {

@@ -60,10 +60,12 @@ export class MagmaFlare extends THREE.Object3D {
       "Glow Inside": true,
       "Glow Outside": true,
     };
+    type LayerName = keyof typeof layers;
 
     const gui = new GUI();
-    Object.values(layers).forEach((layer, index) => {
-      gui.add(layers, Object.keys(layers)[index]);
+    const layerKeys = Object.keys(layers) as LayerName[];
+    layerKeys.forEach((key) => {
+      gui.add(layers, key);
     });
     gui.onChange((event) => {
       this._magma.visible = layers["Magma"];

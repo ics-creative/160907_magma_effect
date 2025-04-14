@@ -23,7 +23,7 @@ export class Magma extends THREE.Object3D {
       // ジオメトリ
       new THREE.SphereGeometry(2, 40, 40),
       // マテリアル
-      new THREE.MeshBasicMaterial({ map })
+      new THREE.MeshBasicMaterial({ map }),
     );
     this.add(mesh);
 
