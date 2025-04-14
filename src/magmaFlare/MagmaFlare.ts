@@ -53,7 +53,7 @@ export class MagmaFlare extends THREE.Object3D {
     this.add(outGlow);
 
     const layers = {
-      Magama: true,
+      Magma: true,
       Aura: true,
       Flare: true,
       Spark: true,
@@ -66,7 +66,7 @@ export class MagmaFlare extends THREE.Object3D {
       gui.add(layers, Object.keys(layers)[index]);
     });
     gui.onChange((event) => {
-      this._magma.visible = layers["Magama"];
+      this._magma.visible = layers["Magma"];
       this._aura.visible = layers["Aura"];
       this._flareEmitter.visible = layers["Flare"];
       this._sparkEmitter.visible = layers["Spark"];
