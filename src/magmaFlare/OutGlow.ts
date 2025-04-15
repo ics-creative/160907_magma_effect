@@ -13,8 +13,9 @@ export class OutGlow extends THREE.Object3D {
 
     // テクスチャーを読み込みます。
     const loader = new THREE.TextureLoader();
-    const map = loader.load("./assets/texture/Particle01.png");
-
+    const map = loader.load("./assets/texture/Particle01.png", (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+    });
     // マテリアル
     const material = new THREE.SpriteMaterial({
       map: map,

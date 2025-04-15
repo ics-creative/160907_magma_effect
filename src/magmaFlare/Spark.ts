@@ -22,7 +22,9 @@ export class Spark extends THREE.Object3D {
 
     // カラーマップ
     const loader = new THREE.TextureLoader();
-    const map = loader.load("./assets/texture/Burst01.png");
+    const map = loader.load("./assets/texture/Burst01.png", (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+    });
     map.wrapS = map.wrapT = THREE.RepeatWrapping;
 
     // マテリアル

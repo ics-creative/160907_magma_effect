@@ -19,7 +19,9 @@ export class Aura extends THREE.Object3D {
 
     // カラーマップ
     const loader = new THREE.TextureLoader();
-    this._map = loader.load("./assets/texture/aura3_type2.png");
+    this._map = loader.load("./assets/texture/aura3_type2.png", (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+    });
     this._map.wrapS = this._map.wrapT = THREE.RepeatWrapping;
 
     // マテリアル
