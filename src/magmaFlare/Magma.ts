@@ -16,9 +16,8 @@ export class Magma extends THREE.Object3D {
 
     // テクスチャーを読み込みます。
     const loader = new THREE.TextureLoader();
-    const map = loader.load("./assets/texture/magma.png", (tex) => {
-      tex.colorSpace = THREE.SRGBColorSpace;
-    });
+    const map = loader.load("./assets/texture/magma.png");
+    map.colorSpace = THREE.SRGBColorSpace;
 
     // テクスチャーをあてた球のMeshを作成します。
     const mesh = new THREE.Mesh(
