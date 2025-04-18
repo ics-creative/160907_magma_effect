@@ -1,16 +1,17 @@
 {
   "compilerOptions": {
+    "target": "ESNext",
     "module": "ESNext",
-    "target": "ES2020",
-    "sourceMap": true,
     "strict": true,
     "lib": [
-      "ES2020",
+      "ESNext",
       "DOM"
     ],
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
   },
+  "include": ["src"],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "docs"
   ]
 }
