@@ -1,5 +1,15 @@
 import * as THREE from "three";
 import { Camera } from "../Camera";
+import {
+  normalize,
+  normalLocal,
+  sub,
+  positionWorld,
+  varying,
+  dot,
+  vec4,
+} from "three/tsl";
+import { UniformNode, NodeMaterial } from "three/webgpu";
 
 /**
  * イングロークラスです。
@@ -17,50 +27,35 @@ export class InGlow extends THREE.Object3D {
     // カメラ
     const camera = Camera.getInstance();
 
-    // マテリアル
-    const material = new THREE.ShaderMaterial({
-      uniforms: {
-        glowColor: { type: "c", value: new THREE.Color(0x96ecff) },
-        viewVector: { type: "v3", value: camera.position },
-      } as {
-        glowColor: THREE.IUniform<THREE.Color>;
-        viewVector: THREE.IUniform<THREE.Vector3>;
-      },
-      // language=GLSL
-      vertexShader: `
-        uniform vec3 viewVector;    // カメラ位置
-        varying float opacity;      // 透明度
-        void main()
-        {
-          // 頂点法線ベクトル x
-          vec3 nNomal = normalize(normal);
-          vec3 nViewVec = normalize(viewVector);
+    // --- TSL (NodeMaterial) の設定 ---
+    const glowColor = new UniformNode(new THREE.Color(0x96ecff));
+    const viewVector = new UniformNode(new THREE.Vector3());
 
-          // 透明度
-          opacity = dot(nNomal, nViewVec);
-          // 反転
-          opacity = 1.0 - opacity;
+    // 頂点シェーダーロジック (TSL)
+    const normal = normalize(normalLocal);
+    const viewDir = normalize(sub(viewVector, positionWorld)); // viewVector は Uniform で渡す
+    const opacityVar = varying(sub(1.0, dot(normal, viewDir)));
 
-          // お決まり
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      // language=GLSL
-      fragmentShader: `
-        uniform vec3 glowColor;
-        varying float opacity;
-        void main()
-        {
-          gl_FragColor = vec4(glowColor, opacity);
-        }
-      `,
-      side: THREE.FrontSide,
-      blending: THREE.AdditiveBlending,
-      transparent: true,
-    });
+    // フラグメントシェーダーロジック (TSL)
+    const finalColor = vec4(glowColor, opacityVar);
+
+    // マテリアル (NodeMaterial)
+    const material = new NodeMaterial();
+    material.outputNode = finalColor; // フラグメントシェーダーの出力
+    // NodeMaterial はデフォルトで positionMVP を使うため、positionNode の設定は不要な場合が多い
+    material.side = THREE.FrontSide;
+    material.blending = THREE.AdditiveBlending;
+    material.transparent = true;
+    material.depthWrite = false; // AdditiveBlending では false にすることが多い
 
     // メッシュ
     const mesh = new THREE.Mesh(geometry, material);
     this.add(mesh);
+
+    // Uniform の値を更新する処理を追加
+    // (本来は update メソッドなどで行うべきだが、ここでは constructor 内で一度設定)
+    mesh.onBeforeRender = (renderer, scene, camera) => {
+      viewVector.value.copy(camera.position);
+    };
   }
 }

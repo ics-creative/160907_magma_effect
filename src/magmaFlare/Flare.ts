@@ -1,4 +1,19 @@
 import * as THREE from "three";
+import {
+  varying,
+  add,
+  uv,
+  length,
+  positionLocal,
+  texture,
+  div,
+  sub,
+  mul,
+  sin,
+  clamp,
+  vec4,
+} from "three/tsl";
+import { UniformNode, NodeMaterial } from "three/webgpu";
 
 /**
  * フレアクラスです。
@@ -6,8 +21,8 @@ import * as THREE from "three";
 export class Flare extends THREE.Object3D {
   /** カラーマップ */
   private readonly _map: THREE.Texture;
-  /** オフセット */
-  private readonly _offset: THREE.Vector2 = new THREE.Vector2();
+  /** オフセット UniformNode */
+  private readonly _offsetUniform: UniformNode<THREE.Vector2>;
 
   /** ランダム係数 */
   private _randomRatio: number = Math.random() + 1;
@@ -42,6 +57,9 @@ export class Flare extends THREE.Object3D {
     this._map.wrapS = this._map.wrapT = THREE.RepeatWrapping;
     this._map.repeat.set(10, 10);
 
+    // UniformNode を作成
+    this._offsetUniform = new UniformNode(new THREE.Vector2());
+
     // マテリアル
     const material = this._createMaterial(bottomRadius, diameter);
 
@@ -59,79 +77,35 @@ export class Flare extends THREE.Object3D {
   private _createMaterial(
     bottomRadius: number,
     diameter: number,
-  ): THREE.ShaderMaterial {
-    const material = new THREE.ShaderMaterial({
-      uniforms: {
-        map: {
-          type: "t",
-          value: this._map,
-        },
-        offset: {
-          type: "v2",
-          value: this._offset,
-        },
-        opacity: {
-          type: "f",
-          value: 0.15,
-        },
-        innerRadius: {
-          type: "f",
-          value: bottomRadius,
-        },
-        diameter: {
-          type: "f",
-          value: diameter,
-        },
-      } as {
-        map: THREE.IUniform<THREE.Texture>;
-        offset: THREE.IUniform<THREE.Vector2>;
-        opacity: THREE.IUniform<number>;
-        innerRadius: THREE.IUniform<number>;
-        diameter: THREE.IUniform<number>;
-      },
-      // language=GLSL
-      vertexShader: `
-        varying vec2 vUv;       // フラグメントシェーダーに渡すUV座標
-        varying float radius;   // フラグメントシェーダーに渡す半径
-        uniform vec2 offset;    // カラーマップのズレ位置
+  ): NodeMaterial {
+    // --- Uniforms ---
+    const offsetUniform = this._offsetUniform; // クラスプロパティを使用
+    const opacityUniform = new UniformNode(0.15);
+    const innerRadiusUniform = new UniformNode(bottomRadius);
+    const diameterUniform = new UniformNode(diameter);
 
-        void main()
-        {
-          // 本来の一からuvをずらす
-          vUv = uv + offset;
-          // 中心から頂点座標までの距離
-          radius = length(position);
-          // 3次元上頂点座標を画面上の二次元座標に変換(お決まり)
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      // language=GLSL
-      fragmentShader: `
-        uniform sampler2D map;      // テクスチャ
-        uniform float opacity;      // 透明度
-        uniform float diameter;     // ドーナツの太さ
-        uniform float innerRadius;  // 内円の半径
-        varying vec2 vUv;           // UV座標
-        varying float radius;       // 中心ドットまでの距離
-        const float PI = 3.1415926; // 円周率
+    // --- Varyings ---
+    const vUv = varying(add(uv(), offsetUniform));
+    const radius = varying(length(positionLocal));
 
-        void main() {
-          // UVの位置からテクスチャの色を取得
-          vec4 tColor = texture2D(map, vUv);
-          // 描画位置がドーナツの幅の何割の位置になるか
-          float ratio = (radius - innerRadius) / diameter;
-          float opacity = opacity * sin(PI * ratio);
-          // ベースカラー
-          vec4 baseColor = (tColor + vec4(0.0, 0.0, 0.3, 1.0));
-          // 透明度を反映させる
-          gl_FragColor = baseColor * vec4(1.0, 1.0, 1.0, opacity);
-        }
-      `,
-      side: THREE.DoubleSide,
-      blending: THREE.AdditiveBlending,
-      depthTest: false,
-      transparent: true,
-    });
+    // --- Fragment Shader Logic ---
+    const tColor = texture(this._map, vUv);
+    const ratio = div(sub(radius, innerRadiusUniform), diameterUniform);
+    const clampedRatio = clamp(ratio, 0.0, 1.0);
+    const fragOpacity = mul(opacityUniform, sin(mul(Math.PI, clampedRatio)));
+    const baseColor = add(tColor, vec4(0.0, 0.0, 0.3, 1.0));
+    const finalColor = mul(baseColor, vec4(1.0, 1.0, 1.0, fragOpacity));
+
+    // --- Material ---
+    const material = new NodeMaterial();
+    material.outputNode = finalColor;
+    // material.positionNode = ???; // Vertex shader logic needs careful translation if not default
+
+    material.side = THREE.DoubleSide;
+    material.blending = THREE.AdditiveBlending;
+    material.transparent = true;
+    material.depthWrite = false;
+
     return material;
   }
 
@@ -139,7 +113,8 @@ export class Flare extends THREE.Object3D {
    * フレーム毎の更新
    */
   public update() {
-    this._offset.x = (performance.now() / 1000) * 0.2 * this._randomRatio;
-    this._offset.y = (-performance.now() / 1000) * 0.8 * this._randomRatio;
+    const time = performance.now() / 1000;
+    this._offsetUniform.value.x = time * 0.2 * this._randomRatio;
+    this._offsetUniform.value.y = -time * 0.8 * this._randomRatio;
   }
 }
