@@ -3,15 +3,9 @@
     "target": "ESNext",
     "module": "ESNext",
     "strict": true,
-    "lib": [
-      "ESNext",
-      "DOM"
-    ],
-    "moduleResolution": "bundler",
+    "lib": ["ESNext", "DOM"],
+    "moduleResolution": "bundler"
   },
   "include": ["src"],
-  "exclude": [
-    "node_modules",
-    "docs"
-  ]
+  "exclude": ["node_modules", "docs"]
 }
