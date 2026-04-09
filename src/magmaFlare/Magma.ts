@@ -1,47 +1,28 @@
 import * as THREE from "three";
+import type { UpdatableObjectController } from "../types";
+import magmaTextureUrl from "./assets/magma.png";
 
 /**
- * マグマ球クラスです。
+ * 流動するマグマ模様の球を生成します。
  */
-export class Magma extends THREE.Object3D {
-  /** カラーマップ */
-  private readonly _map: THREE.Texture;
+export function createMagma(): UpdatableObjectController {
+  const magma = new THREE.Object3D();
+  const loader = new THREE.TextureLoader();
+  const map = loader.load(magmaTextureUrl);
+  map.colorSpace = THREE.SRGBColorSpace;
+  map.wrapS = map.wrapT = THREE.RepeatWrapping;
 
-  /**
-   * コンストラクター
-   * @constructor
-   */
-  constructor() {
-    super();
+  const mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(2, 40, 40),
+    new THREE.MeshBasicMaterial({ map }),
+  );
+  magma.add(mesh);
 
-    // テクスチャーを読み込みます。
-    const loader = new THREE.TextureLoader();
-    const map = loader.load("./assets/texture/magma.png");
-    map.colorSpace = THREE.SRGBColorSpace;
-
-    // テクスチャーをあてた球のMeshを作成します。
-    const mesh = new THREE.Mesh(
-      // ジオメトリ
-      new THREE.SphereGeometry(2, 40, 40),
-      // マテリアル
-      new THREE.MeshBasicMaterial({ map }),
-    );
-    this.add(mesh);
-
-    // 縦横でリピートするように設定します。
-    map.wrapS = map.wrapT = THREE.RepeatWrapping;
-
-    this._map = map;
-  }
-
-  /**
-   * フレーム毎の更新
-   */
-  public update() {
-    // 時間の経過でテクスチャーをずらします。
-    // performance.now()はページを開いてからの経過ミリ秒です。
-    // 1000で割って単位を秒にします。
-    this._map.offset.x = performance.now() / 1000 / 2;
-    this._map.offset.y = performance.now() / 1000 / 2.5;
-  }
+  return {
+    object: magma,
+    update: () => {
+      map.offset.x = performance.now() / 1000 / 2;
+      map.offset.y = performance.now() / 1000 / 2.5;
+    },
+  };
 }

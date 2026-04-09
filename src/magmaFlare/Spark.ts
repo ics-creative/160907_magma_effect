@@ -1,65 +1,52 @@
 import * as THREE from "three";
+import type { UpdatableObjectController } from "../types";
+import sparkTextureUrl from "./assets/Burst01.png";
 
 /**
- * スパーククラス
+ * 上下に流れる細い発光スパークを生成します。
  */
-export class Spark extends THREE.Object3D {
-  /** メッシュ */
-  private readonly _mesh: THREE.Mesh;
+export function createSpark(): UpdatableObjectController {
+  const spark = new THREE.Object3D();
+  const speed = Math.random() * 0.2 + 0.1;
+  const initialOpacity = 0.5;
+  let previousTime = 0;
 
-  /** スピード */
-  private _speed: number = Math.random() * 0.2 + 0.1;
-  /** 透明度 */
-  private _opacity: number = 0.5;
+  const loader = new THREE.TextureLoader();
+  const map = loader.load(sparkTextureUrl);
+  map.colorSpace = THREE.SRGBColorSpace;
+  map.wrapS = map.wrapT = THREE.RepeatWrapping;
 
-  /**
-   * コンストラクター
-   */
-  constructor() {
-    super();
+  const material = new THREE.MeshBasicMaterial({
+    map,
+    transparent: true,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    opacity: initialOpacity,
+  });
 
-    // ジオメトリ
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 2), material);
+  mesh.position.y = Math.random() * 5;
+  mesh.rotation.y = Math.random() * 2;
+  spark.add(mesh);
 
-    // カラーマップ
-    const loader = new THREE.TextureLoader();
-    const map = loader.load("./assets/texture/Burst01.png");
-    map.colorSpace = THREE.SRGBColorSpace;
-    map.wrapS = map.wrapT = THREE.RepeatWrapping;
+  return {
+    object: spark,
+    update: () => {
+      // 前フレームとの差分時間を使い、フレームレートが変わっても落下速度を保つ。
+      const time = performance.now() - previousTime;
+      const speedRatio = time / 16;
 
-    // マテリアル
-    const material = new THREE.MeshBasicMaterial({
-      map,
-      transparent: true,
-      side: THREE.DoubleSide,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      opacity: this._opacity,
-    });
+      material.opacity -= 0.01 * speedRatio;
+      mesh.position.y -= speed * speedRatio;
 
-    // メッシュ
-    this._mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 2), material);
-    this._mesh.position.y = Math.random() * 5;
-    this._mesh.rotation.y = Math.random() * 2;
-    this.add(this._mesh);
-  }
+      // 画面下まで落ちるか消え切ったら、上端へ戻して同じ挙動を繰り返す。
+      if (mesh.position.y < 0 || material.opacity < 0) {
+        mesh.position.y = 8;
+        material.opacity = initialOpacity;
+      }
 
-  private _time: number = 0;
-  /**
-   * フレーム毎の更新
-   */
-  public update() {
-    const time = performance.now() - this._time;
-    const speedRatio = time / 16;
-
-    // 毎フレーム少しずつ移動し透明に近づける。
-    const m = this._mesh.material as THREE.Material;
-    m.opacity -= 0.01 * speedRatio;
-    this._mesh.position.y -= this._speed * speedRatio;
-    // 透明度が0以下だったら位置と透明度を初期化する。
-    if (this._mesh.position.y < 0 || m.opacity < 0) {
-      this._mesh.position.y = 8;
-      m.opacity = this._opacity;
-    }
-    this._time = performance.now();
-  }
+      previousTime = performance.now();
+    },
+  };
 }

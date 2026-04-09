@@ -8,6 +8,7 @@
       "DOM"
     ],
     "moduleResolution": "bundler",
+    "skipLibCheck": true
   },
   "include": ["src"],
   "exclude": [

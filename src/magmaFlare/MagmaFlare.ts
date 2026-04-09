@@ -1,90 +1,85 @@
 import * as THREE from "three";
-import { Magma } from "./Magma";
-import { Aura } from "./Aura";
-import { InGlow } from "./InGlow";
-import { FlareEmitter } from "./FlareEmitter";
-import { SparkEmitter } from "./SparkEmitter";
-import { OutGlow } from "./OutGlow";
-import GUI from "lil-gui";
+import { createMagma } from "./Magma";
+import { createAura } from "./Aura";
+import { createInGlow } from "./InGlow";
+import { createFlareEmitter } from "./FlareEmitter";
+import { createSparkEmitter } from "./SparkEmitter";
+import { createOutGlow } from "./OutGlow";
+import type { UpdatableObjectController } from "../types";
 
 /**
- * マグマフレアクラスです。
+ * マグマフレア全体の公開インターフェースです。
  */
-export class MagmaFlare extends THREE.Object3D {
-  /** マグマ */
-  private readonly _magma: Magma;
-  /** オーラ球 */
-  private readonly _aura: Aura;
-  /** フレアエミッター */
-  private readonly _flareEmitter: FlareEmitter;
-  /** スパークエミッター */
-  private readonly _sparkEmitter: SparkEmitter;
+export type MagmaFlareController = UpdatableObjectController & {
+  visibility: {
+    Magma: boolean;
+    Aura: boolean;
+    Flare: boolean;
+    Spark: boolean;
+    "Glow Inside": boolean;
+    "Glow Outside": boolean;
+  };
+};
 
-  /**
-   * コンストラクター
-   * @constructor
-   */
-  constructor() {
-    super();
+/**
+ * マグマ、フレア、グローを束ねたエフェクト全体を生成します。
+ */
+export function createMagmaFlare(): MagmaFlareController {
+  const magmaFlare = new THREE.Object3D();
+  const magma = createMagma();
+  const aura = createAura();
+  const inGlow = createInGlow();
+  const flareEmitter = createFlareEmitter();
+  const sparkEmitter = createSparkEmitter();
+  const outGlow = createOutGlow();
 
-    // マグマ
-    this._magma = new Magma();
+  magma.object.name = "Magma";
+  aura.object.name = "Aura";
+  flareEmitter.object.name = "Flare";
+  sparkEmitter.object.name = "Spark";
+  inGlow.name = "Glow Inside";
+  outGlow.name = "Glow Outside";
 
-    // オーラ
-    this._aura = new Aura();
+  magmaFlare.add(magma.object);
+  magmaFlare.add(aura.object);
+  magmaFlare.add(flareEmitter.object);
+  magmaFlare.add(sparkEmitter.object);
+  magmaFlare.add(inGlow);
+  magmaFlare.add(outGlow);
 
-    // イングロー
-    const inGlow = new InGlow();
+  // Inspector から編集された boolean を、そのまま各レイヤーの visible に反映する。
+  const visibility: MagmaFlareController["visibility"] = {
+    Magma: true,
+    Aura: true,
+    Flare: true,
+    Spark: true,
+    "Glow Inside": true,
+    "Glow Outside": true,
+  };
 
-    // フレア
-    this._flareEmitter = new FlareEmitter();
+  return {
+    object: magmaFlare,
+    visibility,
+    update: () => {
+      magma.object.visible = visibility.Magma;
+      aura.object.visible = visibility.Aura;
+      flareEmitter.object.visible = visibility.Flare;
+      sparkEmitter.object.visible = visibility.Spark;
+      inGlow.visible = visibility["Glow Inside"];
+      outGlow.visible = visibility["Glow Outside"];
 
-    // スパーク
-    this._sparkEmitter = new SparkEmitter();
-
-    // アウトグロー
-    const outGlow = new OutGlow();
-
-    this.add(this._magma);
-    this.add(this._aura);
-    this.add(inGlow);
-    this.add(this._flareEmitter);
-    this.add(this._sparkEmitter);
-    this.add(outGlow);
-
-    const layers = {
-      Magma: true,
-      Aura: true,
-      Flare: true,
-      Spark: true,
-      "Glow Inside": true,
-      "Glow Outside": true,
-    };
-    type LayerName = keyof typeof layers;
-
-    const gui = new GUI();
-    const layerKeys = Object.keys(layers) as LayerName[];
-    layerKeys.forEach((key) => {
-      gui.add(layers, key);
-    });
-    gui.onChange((event) => {
-      this._magma.visible = layers["Magma"];
-      this._aura.visible = layers["Aura"];
-      this._flareEmitter.visible = layers["Flare"];
-      this._sparkEmitter.visible = layers["Spark"];
-      outGlow.visible = layers["Glow Outside"];
-      inGlow.visible = layers["Glow Inside"];
-    });
-    gui.close();
-  }
-
-  /**
-   * フレーム毎の更新
-   */
-  public update() {
-    this._magma.update();
-    this._aura.update();
-    this._flareEmitter.update();
-    this._sparkEmitter.update();
-  }
+      if (visibility.Magma) {
+        magma.update();
+      }
+      if (visibility.Aura) {
+        aura.update();
+      }
+      if (visibility.Flare) {
+        flareEmitter.update();
+      }
+      if (visibility.Spark) {
+        sparkEmitter.update();
+      }
+    },
+  };
 }

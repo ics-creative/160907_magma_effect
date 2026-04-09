@@ -1,18 +1,18 @@
 {
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "format": "prettier --write src"
+    "format": "oxfmt --write src"
   },
   "devDependencies": {
-    "prettier": "^3.5.3",
-    "typescript": "^5.8.3",
-    "vite": "^6.3.2"
+    "@types/three": "^0.183.1",
+    "oxfmt": "^0.44.0",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.7"
   },
   "dependencies": {
-    "@types/three": "^0.175.0",
-    "lil-gui": "^0.20.0",
-    "three": "^0.175.0"
+    "three": "^0.183.2"
   }
 }

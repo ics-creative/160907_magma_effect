@@ -1,66 +1,25 @@
 import * as THREE from "three";
-import { Camera } from "../Camera";
+import { MeshBasicNodeMaterial } from "three/webgpu";
+import { color, normalView, positionViewDirection, vec4 } from "three/tsl";
 
 /**
- * イングロークラスです。
+ * 球の内側からにじむ縁光を生成します。
  */
-export class InGlow extends THREE.Object3D {
-  /**
-   * コンストラクター
-   */
-  constructor() {
-    super();
+export function createInGlow(): THREE.Object3D {
+  const inGlow = new THREE.Object3D();
+  const geometry = new THREE.SphereGeometry(2.03, 40, 40);
+  const material = new MeshBasicNodeMaterial({
+    side: THREE.FrontSide,
+    blending: THREE.AdditiveBlending,
+    transparent: true,
+  });
 
-    // ジオメトリ
-    const geometry = new THREE.SphereGeometry(2.03, 40, 40);
+  // 視線に対して法線が横を向くほど強く光らせ、球の縁だけを持ち上げる。
+  const alphaNode = normalView.dot(positionViewDirection).clamp().oneMinus().mul(0.55);
+  material.colorNode = vec4(color(0x96ecff), alphaNode);
 
-    // カメラ
-    const camera = Camera.getInstance();
+  const mesh = new THREE.Mesh(geometry, material);
+  inGlow.add(mesh);
 
-    // マテリアル
-    const material = new THREE.ShaderMaterial({
-      uniforms: {
-        glowColor: { type: "c", value: new THREE.Color(0x96ecff) },
-        viewVector: { type: "v3", value: camera.position },
-      } as {
-        glowColor: THREE.IUniform<THREE.Color>;
-        viewVector: THREE.IUniform<THREE.Vector3>;
-      },
-      // language=GLSL
-      vertexShader: `
-        uniform vec3 viewVector;    // カメラ位置
-        varying float opacity;      // 透明度
-        void main()
-        {
-          // 頂点法線ベクトル x
-          vec3 nNomal = normalize(normal);
-          vec3 nViewVec = normalize(viewVector);
-
-          // 透明度
-          opacity = dot(nNomal, nViewVec);
-          // 反転
-          opacity = 1.0 - opacity;
-
-          // お決まり
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      // language=GLSL
-      fragmentShader: `
-        uniform vec3 glowColor;
-        varying float opacity;
-        void main()
-        {
-          gl_FragColor = vec4(glowColor, opacity);
-        }
-      `,
-      side: THREE.FrontSide,
-      blending: THREE.AdditiveBlending,
-      transparent: true,
-    });
-
-    // メッシュ
-    const mesh = new THREE.Mesh(geometry, material);
-    this.add(mesh);
-  }
+  return inGlow;
 }

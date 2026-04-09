@@ -1,39 +1,32 @@
 import * as THREE from "three";
-import { Spark } from "./Spark";
+import { createSpark } from "./Spark";
+import type { UpdatableObjectController } from "../types";
 
 /**
- * スパークのエミッタークラス
+ * 多数のスパークを球の周囲へ散らしたエミッターを生成します。
  */
-export class SparkEmitter extends THREE.Object3D {
-  /** スパークリスト */
-  private _sparkList: Spark[] = [];
-  /** スパークの数 */
-  private _sparkNum: number = 500;
+export function createSparkEmitter(): UpdatableObjectController {
+  const emitter = new THREE.Object3D();
+  const sparks: UpdatableObjectController[] = [];
+  const sparkNum = 500;
+  const perAngle = 360 / sparkNum;
 
-  /**
-   * コンストラクター
-   * @constructor
-   */
-  constructor() {
-    super();
-
-    const perAngle = 360 / this._sparkNum;
-    for (let i = 0; i < this._sparkNum; i++) {
-      const rad = (perAngle * i * Math.PI) / 180;
-      const spark = new Spark();
-      spark.rotation.x = 360 * Math.sin(rad);
-      spark.rotation.z = rad;
-      this.add(spark);
-      this._sparkList.push(spark);
-    }
+  for (let i = 0; i < sparkNum; i++) {
+    const rad = (perAngle * i * Math.PI) / 180;
+    const spark = createSpark();
+    // 細長いスパーク面を球の周囲へばらまいて、外周から立ち上がる粒子に見せる。
+    spark.object.rotation.x = 360 * Math.sin(rad);
+    spark.object.rotation.z = rad;
+    emitter.add(spark.object);
+    sparks.push(spark);
   }
 
-  /**
-   * フレーム毎の更新
-   */
-  public update() {
-    this._sparkList.forEach((spark: Spark) => {
-      spark.update();
-    });
-  }
+  return {
+    object: emitter,
+    update: () => {
+      sparks.forEach((spark) => {
+        spark.update();
+      });
+    },
+  };
 }

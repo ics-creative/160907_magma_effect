@@ -1,39 +1,33 @@
 import * as THREE from "three";
-import { Flare } from "./Flare";
+import { createFlare } from "./Flare";
+import type { UpdatableObjectController } from "../types";
 
 /**
- * フレアエミッタークラスです。
+ * 複数のフレアを球の周囲へ配置したエミッターを生成します。
  */
-export class FlareEmitter extends THREE.Object3D {
-  /** フレアの数 */
-  private _flareNum: number = 10;
-  /** フレアリスト */
-  private _flareList: Flare[] = [];
+export function createFlareEmitter(): UpdatableObjectController {
+  const emitter = new THREE.Object3D();
+  const flares: UpdatableObjectController[] = [];
+  const flareNum = 10;
+  const perAngle = 360 / flareNum;
 
-  /**
-   * コンストラクター
-   */
-  constructor() {
-    super();
-
-    const perAngle = 360 / this._flareNum;
-    for (let i = 0; i < this._flareNum; i++) {
-      const rad = (perAngle * i * Math.PI) / 180;
-      const flare = new Flare();
-      flare.rotation.x = rad;
-      flare.rotation.y = rad;
-      flare.rotation.z = rad / 2;
-      this.add(flare);
-      this._flareList.push(flare);
-    }
+  for (let i = 0; i < flareNum; i++) {
+    const rad = (perAngle * i * Math.PI) / 180;
+    const flare = createFlare();
+    // 複数のリングを別方向へ傾け、球の周囲に放射状の帯を重ねる。
+    flare.object.rotation.x = rad;
+    flare.object.rotation.y = rad;
+    flare.object.rotation.z = rad / 2;
+    emitter.add(flare.object);
+    flares.push(flare);
   }
 
-  /**
-   * フレーム毎の更新です。
-   */
-  public update() {
-    this._flareList.forEach((flare) => {
-      flare.update();
-    });
-  }
+  return {
+    object: emitter,
+    update: () => {
+      flares.forEach((flare) => {
+        flare.update();
+      });
+    },
+  };
 }

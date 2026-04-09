@@ -6,13 +6,7 @@ export default defineConfig({
 
   // Configure build output
   build: {
-    // Output directory (same as webpack)
+    // Output directory
     outDir: 'docs',
-  },
-
-  // Development server configuration
-  server: {
-    // Open browser on server start
-    open: true,
   },
 });

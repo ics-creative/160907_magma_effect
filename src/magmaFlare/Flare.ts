@@ -1,145 +1,98 @@
 import * as THREE from "three";
+import { MeshBasicNodeMaterial } from "three/webgpu";
+import { PI, float, texture, uniform, uv, vec3, vec4 } from "three/tsl";
+import type { UpdatableObjectController } from "../types";
+import auraTextureUrl from "./assets/aura3_type2.png";
+
+const OUTER_RADIUS = 6;
+const INNER_RADIUS = 2;
+
+function createFlareGeometry() {
+  const radialSegments = 30;
+  const widthSegments = 3;
+  const positions: number[] = [];
+  const uvs: number[] = [];
+  const indices: number[] = [];
+
+  // 半径 2 から 6 までを細かく分割し、発光帯 1 枚分のリング面を作る。
+  for (let y = 0; y <= widthSegments; y++) {
+    const v = y / widthSegments;
+    const radius = INNER_RADIUS + (OUTER_RADIUS - INNER_RADIUS) * v;
+
+    for (let x = 0; x <= radialSegments; x++) {
+      const u = x / radialSegments;
+      const theta = u * Math.PI * 2;
+      positions.push(Math.cos(theta) * radius, 0, Math.sin(theta) * radius);
+      uvs.push(u, v);
+    }
+  }
+
+  for (let y = 0; y < widthSegments; y++) {
+    for (let x = 0; x < radialSegments; x++) {
+      const stride = radialSegments + 1;
+      const a = y * stride + x;
+      const b = a + 1;
+      const c = a + stride;
+      const d = c + 1;
+      indices.push(a, c, b, b, c, d);
+    }
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+  geometry.setIndex(indices);
+  geometry.computeBoundingSphere();
+
+  return geometry;
+}
+
+function createFlareMaterial(map: THREE.Texture, offset: THREE.Vector2) {
+  const material = new MeshBasicNodeMaterial({
+    side: THREE.DoubleSide,
+    blending: THREE.AdditiveBlending,
+    depthTest: false,
+    depthWrite: false,
+    transparent: true,
+  });
+
+  const offsetNode = uniform(offset);
+  const textureNode = texture(map, uv().add(offsetNode));
+  // v 方向の 0 -> 1 を使って、帯の両端が薄く中央が最も強く光るようにする。
+  const radialFadeNode = uv().y.mul(PI).sin().clamp().mul(float(0.15));
+
+  material.colorNode = vec4(textureNode.rgb.add(vec3(0.0, 0.0, 0.3)), float(1.0));
+  // 模様テクスチャの抜けを使いながら、帯全体に加算発光の明るさを持たせる。
+  material.opacityNode = textureNode.a.add(float(1.0)).mul(radialFadeNode);
+
+  return material;
+}
 
 /**
- * フレアクラスです。
+ * 球の周囲を横切るリング状のフレアを生成します。
  */
-export class Flare extends THREE.Object3D {
-  /** カラーマップ */
-  private readonly _map: THREE.Texture;
-  /** オフセット */
-  private readonly _offset: THREE.Vector2 = new THREE.Vector2();
+export function createFlare(): UpdatableObjectController {
+  const flare = new THREE.Object3D();
+  const offset = new THREE.Vector2();
+  const randomRatio = Math.random() + 1;
 
-  /** ランダム係数 */
-  private _randomRatio: number = Math.random() + 1;
+  const loader = new THREE.TextureLoader();
+  const map = loader.load(auraTextureUrl);
+  map.colorSpace = THREE.SRGBColorSpace;
+  map.wrapS = map.wrapT = THREE.RepeatWrapping;
+  map.repeat.set(10, 10);
 
-  /**
-   * コンストラクター
-   */
-  constructor() {
-    super();
+  const mesh = new THREE.Mesh(createFlareGeometry(), createFlareMaterial(map, offset));
+  // 加算合成のリングを球の前に安定して重ねる。
+  mesh.renderOrder = 20;
+  flare.add(mesh);
 
-    // 上面の半径
-    const topRadius = 6;
-    // 下面の半径
-    const bottomRadius = 2;
-    // ドーナツの太さ
-    const diameter = topRadius - bottomRadius;
-
-    // ジオメトリ
-    const geometry = new THREE.CylinderGeometry(
-      topRadius,
-      bottomRadius,
-      0,
-      30,
-      3,
-      true,
-    );
-
-    // カラーマップ
-    const loader = new THREE.TextureLoader();
-    this._map = loader.load("./assets/texture/aura3_type2.png");
-    this._map.colorSpace = THREE.SRGBColorSpace;
-    this._map.wrapS = this._map.wrapT = THREE.RepeatWrapping;
-    this._map.repeat.set(10, 10);
-
-    // マテリアル
-    const material = this._createMaterial(bottomRadius, diameter);
-
-    // メッシュ
-    const mesh = new THREE.Mesh(geometry, material);
-    this.add(mesh);
-  }
-
-  /**
-   * マテリアルを生成します。
-   * @param bottomRadius 下面の半径
-   * @param diameter ドーナツの太さ
-   * @private
-   */
-  private _createMaterial(
-    bottomRadius: number,
-    diameter: number,
-  ): THREE.ShaderMaterial {
-    const material = new THREE.ShaderMaterial({
-      uniforms: {
-        map: {
-          type: "t",
-          value: this._map,
-        },
-        offset: {
-          type: "v2",
-          value: this._offset,
-        },
-        opacity: {
-          type: "f",
-          value: 0.15,
-        },
-        innerRadius: {
-          type: "f",
-          value: bottomRadius,
-        },
-        diameter: {
-          type: "f",
-          value: diameter,
-        },
-      } as {
-        map: THREE.IUniform<THREE.Texture>;
-        offset: THREE.IUniform<THREE.Vector2>;
-        opacity: THREE.IUniform<number>;
-        innerRadius: THREE.IUniform<number>;
-        diameter: THREE.IUniform<number>;
-      },
-      // language=GLSL
-      vertexShader: `
-        varying vec2 vUv;       // フラグメントシェーダーに渡すUV座標
-        varying float radius;   // フラグメントシェーダーに渡す半径
-        uniform vec2 offset;    // カラーマップのズレ位置
-
-        void main()
-        {
-          // 本来の一からuvをずらす
-          vUv = uv + offset;
-          // 中心から頂点座標までの距離
-          radius = length(position);
-          // 3次元上頂点座標を画面上の二次元座標に変換(お決まり)
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      // language=GLSL
-      fragmentShader: `
-        uniform sampler2D map;      // テクスチャ
-        uniform float opacity;      // 透明度
-        uniform float diameter;     // ドーナツの太さ
-        uniform float innerRadius;  // 内円の半径
-        varying vec2 vUv;           // UV座標
-        varying float radius;       // 中心ドットまでの距離
-        const float PI = 3.1415926; // 円周率
-
-        void main() {
-          // UVの位置からテクスチャの色を取得
-          vec4 tColor = texture2D(map, vUv);
-          // 描画位置がドーナツの幅の何割の位置になるか
-          float ratio = (radius - innerRadius) / diameter;
-          float opacity = opacity * sin(PI * ratio);
-          // ベースカラー
-          vec4 baseColor = (tColor + vec4(0.0, 0.0, 0.3, 1.0));
-          // 透明度を反映させる
-          gl_FragColor = baseColor * vec4(1.0, 1.0, 1.0, opacity);
-        }
-      `,
-      side: THREE.DoubleSide,
-      blending: THREE.AdditiveBlending,
-      depthTest: false,
-      transparent: true,
-    });
-    return material;
-  }
-
-  /**
-   * フレーム毎の更新
-   */
-  public update() {
-    this._offset.x = (performance.now() / 1000) * 0.2 * this._randomRatio;
-    this._offset.y = (-performance.now() / 1000) * 0.8 * this._randomRatio;
-  }
+  return {
+    object: flare,
+    update: () => {
+      // x と y を別速度で流して、同じ帯でも単調に見えないようにする。
+      offset.x = (performance.now() / 1000) * 0.2 * randomRatio;
+      offset.y = (-performance.now() / 1000) * 0.8 * randomRatio;
+    },
+  };
 }
