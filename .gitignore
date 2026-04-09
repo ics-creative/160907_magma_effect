@@ -2,8 +2,8 @@
 Thumbs.db
 node_modules
 dist
+.codex
 *.map
 .idea
 /yarn.lock
-/package-lock.json
 artifacts-*.png
