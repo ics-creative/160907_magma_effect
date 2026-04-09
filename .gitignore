@@ -1,6 +1,7 @@
 .DS_Store
 Thumbs.db
 node_modules
+dist
 *.map
 .idea
 /yarn.lock
