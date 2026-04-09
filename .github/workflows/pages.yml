@@ -1,0 +1,68 @@
+name: ページ公開
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: チェックアウト
+        uses: actions/checkout@v5
+
+      - name: Node.js セットアップ
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24.x
+          cache: npm
+
+      - name: 依存関係のインストール
+        run: npm ci
+
+      - name: Pages 設定
+        uses: actions/configure-pages@v5
+
+      - name: ビルド
+        run: npm run build
+
+      - name: Pages アーティファクト作成
+        run: |
+          tar \
+            --dereference --hard-dereference \
+            --directory dist \
+            -cvf "$RUNNER_TEMP/artifact.tar" \
+            --exclude=.git \
+            --exclude=.github \
+            --exclude='.[^/]*' \
+            .
+
+      - name: 生成物のアップロード
+        uses: actions/upload-artifact@v6
+        with:
+          name: github-pages
+          path: ${{ runner.temp }}/artifact.tar
+          retention-days: 1
+          if-no-files-found: error
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: デプロイ
+        id: deploy
+        uses: actions/deploy-pages@v5
