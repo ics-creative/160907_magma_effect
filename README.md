@@ -1,9 +1,12 @@
 # マグマエフェクト
 
-three.jsを使ったマグマフェクトサンプルです。
-記事『[エフェクト作成入門講座 マグマエフェクト作成 three.js編](https://ics.media/entry/13973/)』で解説しています。
+three.jsを使ったマグマフェクトサンプルです。  
+次の記事で解説しています。
 
-このプロジェクトはViteを使用しています。
+
+- JA: [エフェクト作成入門講座 Three\.js編 ゲーム演出に役立つマグマ表現の作り方 \- ICS MEDIA](https://dev.ics.media/entry/13973/)
+- EN: [Three\.js magma effect techniques for game visuals \- ICS MEDIA](https://dev.ics.media/en/entry/13973/)
+
 
 ## Setup
 
